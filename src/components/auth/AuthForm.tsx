@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword, signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, googleProvider, db } from "@/lib/auth";
 import { doc, setDoc } from "firebase/firestore";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -17,6 +18,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+
+  // If already logged in, redirect to dashboard
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, authLoading, router]);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +35,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
     try {
       if (mode === "login") {
         await signInWithEmailAndPassword(auth, email, password);
-        router.push("/dashboard");
+        router.replace("/dashboard");
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         // Create user document in Firestore
@@ -36,7 +45,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
           role: "student",
           createdAt: new Date().toISOString(),
         });
-        router.push("/dashboard");
+        router.replace("/dashboard");
       }
     } catch (err: any) {
       console.error(err);
@@ -60,7 +69,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
         role: "student",
         createdAt: new Date().toISOString(),
       }, { merge: true });
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Failed to authenticate with Google.");
