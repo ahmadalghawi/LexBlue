@@ -1,25 +1,17 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// NOTE: Firebase Auth stores tokens in localStorage/IndexedDB — NOT in cookies.
+// Server-side middleware cannot read Firebase Auth state directly.
+// Route protection is handled client-side by AuthGuard.tsx.
+// This middleware only handles public asset/API routing.
+
 export function middleware(request: NextRequest) {
-  const currentUser = request.cookies.get('firebaseAuthToken')?.value;
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register');
-  const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/learn');
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
-
-  // If user is trying to access a protected route without a token (Client side logic will handle precise checks, this is rudimentary)
-  if (!currentUser && (isProtectedRoute || isAdminRoute)) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  // If user is logged in and trying to access login/register
-  if (currentUser && isAuthRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
+  // No server-side auth check here — Firebase tokens are not accessible in middleware.
+  // AuthGuard component handles all client-side route protection.
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/learn/:path*', '/admin/:path*', '/login', '/register'],
+  matcher: ['/dashboard/:path*', '/learn/:path*', '/admin/:path*'],
 };
