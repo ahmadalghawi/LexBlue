@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LexBlue - Join the Artisan Circle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#1978e5",
+                        "primary-container": "#d6e4ff",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#001b3d",
+                        "secondary": "#525e7d",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#dbe2ff",
+                        "on-secondary-container": "#0e1a37",
+                        "tertiary": "#76546d",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#ffd7f3",
+                        "on-tertiary-container": "#2d1228",
+                        "background": "#f8f9ff",
+                        "on-background": "#191c20",
+                        "surface": "#f8f9ff",
+                        "on-surface": "#191c20",
+                        "surface-variant": "#e0e2ec",
+                        "on-surface-variant": "#44474e",
+                        "outline": "#74777f",
+                        "outline-variant": "#c4c6cf",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f2f3f9",
+                        "surface-container": "#eceef4",
+                        "surface-container-high": "#e6e8ee",
+                        "surface-container-highest": "#e1e2e8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ambient-shadow {
+            box-shadow: 0 40px 40px -20px rgba(25, 120, 229, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<nav class="w-full top-0 z-50 bg-background/80 backdrop-blur-md flex justify-between items-center px-6 py-4 max-w-screen-2xl mx-auto font-headline antialiased border-b border-outline-variant/30">
+<div class="text-2xl font-bold tracking-tight text-primary" style="">LexBlue</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-primary font-semibold hover:bg-primary/5 transition-all duration-300 px-4 py-2 rounded-lg" href="#" style="">Sign Up</a>
+</div>
+</nav>
+<main class="flex-grow flex items-center justify-center p-6 relative overflow-hidden">
+<div class="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-24 -right-24 w-96 h-96 bg-secondary/10 rounded-full blur-3xl"></div>
+<div class="w-full max-w-md relative z-10">
+<div class="mb-12 text-center">
+<h1 class="font-headline text-5xl font-extrabold text-on-background tracking-tight mb-4" style="">Master the Craft.</h1>
+<p class="text-on-surface-variant max-w-xs mx-auto leading-relaxed" style="">Join 50,000+ artisans learning the delicate balance of code and design.</p>
+</div>
+<div class="bg-surface-container-lowest rounded-lg ambient-shadow p-10 flex flex-col gap-8 border border-outline-variant/30">
+<div class="flex p-1.5 bg-surface-container rounded-lg">
+<button class="flex-1 py-2 px-4 rounded-md font-headline font-semibold text-sm transition-all duration-300 bg-surface-container-lowest text-primary shadow-sm" style="">Login</button>
+<button class="flex-1 py-2 px-4 rounded-md font-headline font-semibold text-sm transition-all duration-300 text-on-surface-variant hover:text-on-surface" style="">Sign Up</button>
+</div>
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-outline ml-1" style="">Email Address</label>
+<input class="w-full bg-surface-container-high border border-transparent rounded-lg px-6 py-4 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest focus:border-primary/50 transition-all duration-300 outline-none" placeholder="name@example.com" type="email"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center ml-1">
+<label class="text-xs font-bold uppercase tracking-widest text-outline" style="">Password</label>
+<a class="text-[10px] uppercase tracking-widest text-primary font-bold hover:underline" href="#" style="">Forgot?</a>
+</div>
+<input class="w-full bg-surface-container-high border border-transparent rounded-lg px-6 py-4 text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest focus:border-primary/50 transition-all duration-300 outline-none" placeholder="••••••••" type="password"/>
+</div>
+<button class="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-lg text-lg shadow-lg shadow-primary/20 hover:bg-primary/90 hover:scale-[0.99] transition-all duration-300" style="" type="submit">
+                        Login to Academy
+                    </button>
+</form>
+<div class="relative flex items-center gap-4 py-2">
+<div class="flex-grow h-[1px] bg-outline-variant/50"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-outline-variant" style="">or continue with</span>
+<div class="flex-grow h-[1px] bg-outline-variant/50"></div>
+</div>
+<div class="grid grid-cols-2 gap-4 flex justify-center">
+<button class="flex items-center justify-center gap-2 py-3 px-4 bg-surface-container border border-outline-variant/30 rounded-lg hover:bg-surface-container-high transition-colors duration-300 group" style="">
+<span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform text-on-surface-variant" style="">google</span>
+<span class="text-xs font-semibold text-on-surface-variant" style=""><br/></span>
+</button>
+</div>
+</div>
+<div class="mt-8 flex flex-wrap justify-center gap-4">
+<div class="flex -space-x-3">
+<img class="w-8 h-8 rounded-full border-2 border-background object-cover" data-alt="portrait of a creative professional woman with soft natural lighting and neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8wP5lfV88gNwDtHsXN97lN1Iqz7rGyZvMLtUxHbF5NPu7m0sTY3MQ-8xa-tZw8yoHTUZ6QeoCVdnOM8xC2k_SKIp5z_MnN-JM30OvKY3_gFI2K79kSrGpxkGwTQv0dYw5_mRV3gjypc1DJ-CDW8T2sING2WGlgxUkdtog8Tj2FNFiSzJMQ7HqaAUZSOSGBkOcDNX1QrfTD_hg1vNJS-s23Y8J6PTDme7BmZHugmy3yXNX8-LoGkTYKU31Mx-OOlYXMalZYLYSTAM" style=""/>
+<img class="w-8 h-8 rounded-full border-2 border-background object-cover" data-alt="close-up of a smiling young man in a modern office setting with warm ambient light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHG0iwlRIOboYXo7wJ6e1lxH_PSjmxOd5eBBRIWXYBJcIHdLOZmDoAh6EqSNLGQrqsVhjUv5IP1YdCsyhTEx2Io0UPIWsW009Hpsev2AmgJEFZx4owOUpQfFF-Tno2JHbAEEZyhhkP2rGU7Ee_YW4NiUgLKahL3wsgZiQIQzxC_kgdVUD2-VrFc04cotAHWQLV2yPLMGYllSCR1dZWzziIcfsskMigKyY5hBxwaZl0jUIBNJPUdvaZqKDEOaJdwSSYvUtuAzV29DQ" style=""/>
+<img class="w-8 h-8 rounded-full border-2 border-background object-cover" data-alt="artistic portrait of a student in a bright gallery-style environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDALu5iWWBwvjR10vfbuFBa6zFbWQRdQ452ewqZigAQpAO1C7unYrdCdPbGS7yPFpQDZzSe76dfprqFE66klKHYpUzeeDid8uqpu8bdzCfq-f0cJSof60-iTNQ38Rj_OzxueSptXhnkwtJW1KDzqV__E2m-70uNq75qcUemRhcy7xn45QjMA8XMdPQ-m_WcATKAoXRza7hr6jmfiEl3BODWbXRajJjkcsm2Gkxicxs_kD7cpU3tD1Ev9o22wdUPNHoKKBokEqBYE5Q" style=""/>
+</div>
+<p class="text-xs text-on-surface-variant font-medium flex items-center" style="">
+                    Already mastered by curious minds worldwide.
+                </p>
+</div>
+</div>
+</main>
+<footer class="w-full bg-background flex flex-col md:flex-row justify-between items-center px-8 py-12 gap-6 text-sm border-t border-outline-variant/30">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="font-headline font-bold text-primary" style="">LexBlue</span>
+<p class="text-outline" style="">© 2024 LexBlue. Crafted for clarity and focus.</p>
+</div>
+<div class="flex gap-8">
+<a class="text-outline hover:text-primary transition-colors font-medium" href="#" style="">Terms of Service</a>
+<a class="text-outline hover:text-primary transition-colors font-medium" href="#" style="">Privacy Policy</a>
+<a class="text-outline hover:text-primary transition-colors font-medium" href="#" style="">Help Center</a>
+</div>
+</footer>
+</body></html>
