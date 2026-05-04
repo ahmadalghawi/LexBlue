@@ -1,5 +1,5 @@
 import {ArrowRight, CloudCheck, Monitor, Shield} from "lucide-react";
-import {SubmitEventHandler} from "react";
+import Link from "next/link";
 
 export const metadata = {
   title: "LexBlue | Home",
@@ -8,10 +8,10 @@ export const metadata = {
 
 export default function HomePage() {
 
-  function HandleEmailListSignup(aEvent : React.SyntheticEvent<HTMLFormElement>)
+/*  function HandleEmailListSignup(aEvent : React.SyntheticEvent<HTMLFormElement>)
   {
 
-  }
+  }*/
 
   return (
       <div className='flex flex-col'>
@@ -33,8 +33,14 @@ export default function HomePage() {
               </p>
 
               <div className='w-full flex'>
-                <button className='mx-auto rounded-lg w-3/8 ring-1 bg-primary text-background ring-ring p-4'>Start your journey</button>
-                <button className='mx-auto rounded-lg w-3/8 ring-1 bg-background p-4'>Browse Tracks</button>
+                <Link href={"/learn"}
+                className='w-3/8 mx-auto'>
+                  <button className='rounded-lg ring-1 w-full bg-primary text-background ring-ring p-4 hover:-translate-y-0.5 transition-all cursor-pointer'>Start your journey</button>
+                </Link>
+                <Link href={"/courses"}
+                className='w-3/8 mx-auto'>
+                  <button className='rounded-lg ring-1 w-full bg-background p-4 hover:-translate-y-0.5 transition-all cursor-pointer'>Browse Courses</button>
+                </Link>
               </div>
             </div>
 
@@ -65,9 +71,9 @@ export default function HomePage() {
                   <div className='mt-auto flex flex-row'>
                       {/*<p className='mt-auto'>Social icons here...</p>*/}
                       <div className='ml-auto'>
-                        <div className='bg-muted-foreground/50 w-[48px] h-[48px] rounded-full'>
-                          <ArrowRight className='m-auto h-full'/>
-                        </div>
+                        <button className='bg-muted-foreground/50 w-[48px] h-[48px] rounded-full group/arrowParent hover:scale-[102%] transition-transform cursor-pointer'>
+                          <ArrowRight className='m-auto h-full group-hover/arrowParent:translate-x-0.5 transition-transform'/>
+                        </button>
                       </div>
                   </div>
                 </div>
@@ -124,7 +130,7 @@ export default function HomePage() {
               <input type='email' name='emailField' placeholder='Your email'
               className='bg-background text-foreground grow rounded-md ring h-[32px] p-4'/>
               <label htmlFor='emailField' className='my-auto'></label>
-              <input type='submit' className='bg-primary w-max px-4 py-2 rounded-lg mx-auto ring ring-ring text-background hover:-translate-y-0.5 transition-all' value='Sign up'></input>
+              <input type='submit' className='cursor-pointer bg-primary w-max px-4 py-2 rounded-lg mx-auto ring ring-ring text-background hover:-translate-y-0.5 transition-all' value='Sign up'></input>
             </div>
 
           </div>
