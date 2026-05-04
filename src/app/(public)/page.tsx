@@ -15,7 +15,7 @@ export default function HomePage() {
 
   return (
       <div className='flex flex-col'>
-        <div className='px-16 py-16 grow h-max shadow-md '>
+        <div className='px-6 xl:px-16 py-16 grow h-max shadow-md '>
           <div className='flex flex-row gap-32 max-w-7xl mx-auto'>
             <div className='max-w-[578px] grow m-auto'>
               <div className='rounded-2xl my-8 text-sm font-bold px-3 py-1 w-max bg-primary/20'>
@@ -35,11 +35,11 @@ export default function HomePage() {
               <div className='w-full flex'>
                 <Link href={"/learn"}
                 className='w-3/8 mx-auto'>
-                  <button className='rounded-lg ring-1 w-full bg-primary text-background ring-ring p-4 hover:-translate-y-0.5 transition-all cursor-pointer'>Start your journey</button>
+                  <button className='select-none rounded-lg ring-1 w-full bg-primary text-background ring-ring p-4 hover:-translate-y-0.5 transition-all cursor-pointer'>Start your journey</button>
                 </Link>
                 <Link href={"/courses"}
                 className='w-3/8 mx-auto'>
-                  <button className='rounded-lg ring-1 w-full bg-background p-4 hover:-translate-y-0.5 transition-all cursor-pointer'>Browse Courses</button>
+                  <button className='select-none rounded-lg ring-1 w-full bg-background p-4 hover:-translate-y-0.5 transition-all cursor-pointer'>Browse Courses</button>
                 </Link>
               </div>
             </div>
@@ -53,21 +53,21 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className='grow h-full bg-secondary/25 '>
+        <div className='grow h-max bg-secondary/25 '>
           <div className='m-16 max-w-7xl mx-auto'>
-            <div className=''>
+            <div className='mx-auto xl:mx-0 w-2/3'>
               <h1 className='text-[36px] font-bold'>Master the Digital Infrastructre</h1>
               <div className='w-[96px] border-b-4 rounded-full border-primary'/>
             </div>
 
-            <div className='flex flex-col h-[800px] max-h-[800px] mt-16 gap-8'>
-              <div className='h-[55%] flex flex-row gap-8'>
-                <div className=' w-4/6 bg-background rounded-2xl p-8 flex flex-col gap-2'> {/*w-[738px] h-[400px]*/}
+            <div className='flex flex-col xl:max-h-[800px] mt-16 gap-8'>
+              <div className='h-[55%] flex flex-col xl:flex-row gap-8'>
+                <div className=' xl:w-4/6 min-h-[256px] bg-background xl:rounded-2xl p-8 flex flex-col gap-2'> {/*w-[738px] h-[400px]*/}
                   <div className='flex gap-2'>
                     <Monitor/>
                     <p>SIGNATURE TRACK</p>
                   </div>
-                  <h1 className='text-4xl font-bold'>TITLE OF SOME TRACK FETCHED IN THE DATABASE</h1>
+                  <h1 className='text-4xl font-bold'>TITLE OF SOME FEATURED COURSE FETCHED IN THE DATABASE</h1>
                   <div className='mt-auto flex flex-row'>
                       {/*<p className='mt-auto'>Social icons here...</p>*/}
                       <div className='ml-auto'>
@@ -78,7 +78,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div className='w-2/6 h-1/2 bg-primary rounded-2xl text-background p-8'> {/*w-[357px] h-[148px]*/}
+                <div className='min-w-[416px] mx-auto xl:mx-0 xl:w-2/6 h-1/2 bg-primary rounded-2xl text-background p-8'> {/*w-[357px] h-[148px]*/}
                   <CloudCheck className='scale-125'/>
                   <h1 className='font-bold text-3xl '>98%</h1>
                   <p className='text-background/75'>JOB PLACEMENT</p>
@@ -86,8 +86,8 @@ export default function HomePage() {
 
               </div>
               <div className='h-[45%]'>
-                <div className='flex flex-row gap-8 h-full'>
-                  <div className='w-4/6 grid grid-cols-2 gap-8'>
+                <div className='flex flex-col xl:flex-row gap-8 h-full'>
+                  <div className='min-h-[345px] w-[345px] mx-auto xl:mx-0 xl:w-4/6 flex flex-col xl:grid xl:grid-cols-2 gap-8'>
                     <div className='grow bg-background rounded-2xl p-8 flex flex-col'>
                       <div className='rounded-lg bg-secondary w-[48px] h-[48px] mb-4'>
                         <Shield className='h-full m-auto'/>
@@ -95,7 +95,7 @@ export default function HomePage() {
                       <h1 className='font-bold text-2xl/12'>Cybersecurity</h1>
                       <p className='text-foreground/50'>Protecting the artisanal web through elite defensive tactics.</p>
                     </div>
-                    <div className='grow rounded-2xl flex flex-col
+                    <div className='min-h-[345px] grow rounded-2xl flex flex-col
                     bg-[url(https://images.unsplash.com/photo-1683322499436-f4383dd59f5a?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)] '>
                       <div className='rounded-2xl bg-gradient-to-t from-primary/50 to-background-50/0 h-1/3 flex p-8 mt-auto'>
 
@@ -105,7 +105,7 @@ export default function HomePage() {
 
                   </div>
 
-                  <div className='w-2/6 h-1/2 bg-background rounded-2xl p-8 flex flex-col text-foreground'>
+                  <div className='min-h-[200px] xl:w-2/6 h-1/2 bg-background xl:rounded-2xl p-8 flex flex-col text-foreground'>
                     <p className='text-sm text-foreground/65'>IN PROGRESS</p>
                     <h1 className='text-3xl font-bold'>Rust: System Performance</h1>
                     <div className='w-full h-3 bg-accent rounded-2xl mt-auto'>
@@ -117,8 +117,8 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className='w-full p-16'>
-          <div className='mx-auto w-max text-center'>
+        <div className='w-full p-6 xl:p-16'>
+          <div className='mx-auto w-full text-center'>
             <h1 className='text-4xl font-bold'>Join the LexBlue Stack</h1>
             <div className='text-foreground/70'>
               <p>Weekly deep-dives into engineering culture, emerging stacks, and IT strategy.</p>
