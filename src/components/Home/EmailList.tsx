@@ -15,7 +15,7 @@ export function EmailList()
                     <input type='email' name='emailField' placeholder='Your email'
                            className='bg-background text-foreground grow rounded-md ring h-[32px] p-4'/>
                     <label htmlFor='emailField' className='my-auto'></label>
-                    <input type='submit' className='cursor-pointer bg-primary w-max px-4 py-2 rounded-lg mx-auto ring ring-ring text-background hover:-translate-y-0.5 transition-all' value='Sign up'></input>
+                    <input type='submit' className='cursor-pointer bg-primary w-max px-4 py-2 rounded-lg mx-auto ring ring-ring text-background hover:drop-shadow-lg hover:-translate-y-0.5 transition-all' value='Sign up'></input>
                 </div>
 
             </div>

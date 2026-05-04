@@ -1,7 +1,45 @@
+"use client";
+
 import {ArrowRight, CloudCheck, Monitor, Shield} from "lucide-react";
+import { db } from "@/lib/firebase"
+import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
+import {Course} from "@/types";
+import {useEffect, useState} from "react";
+import Link from "next/link";
 
 export function HomeCourseHighlight()
 {
+
+    const [fetchedCourses, setFetchedCourses] = useState<Course[]>();
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    const fetchAll = async () => {
+        setIsLoading(true)
+        try
+        {
+            const sentQuery = query(collection(db, "courses"));
+            const snap = await getDocs(sentQuery);
+            setFetchedCourses(snap.docs.map((d)=>({ id: d.id, ...d.data() } as Course)))
+        }
+        catch (e)
+        {
+            console.error("Homepage: Failed to load courses", e);
+        }
+        finally
+        {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchAll();
+    }, []);
+
+    if (isLoading)
+    {
+        return ( <></>);
+    }
+
     return (
         <div className='grow h-max bg-secondary/25 '>
             <div className='m-16 max-w-7xl mx-auto'>
@@ -13,17 +51,34 @@ export function HomeCourseHighlight()
                 <div className='flex flex-col xl:max-h-[800px] mt-16 gap-8'>
                     <div className='h-[55%] flex flex-col xl:flex-row gap-8'>
                         <div className=' xl:w-4/6 min-h-[256px] bg-background xl:rounded-2xl p-8 flex flex-col gap-2'> {/*w-[738px] h-[400px]*/}
-                            <div className='flex gap-2'>
-                                <Monitor/>
-                                <p>SIGNATURE TRACK</p>
+                            <div className='flex gap-8'>
+                                <div>
+                                    <div className='flex gap-2'>
+                                        <Monitor/>
+                                        <p>HIGHLIGHTED COURSE</p>
+                                    </div>
+
+                                    {/* TODO: Pick a course instead of index 0! */}
+                                    <div style={{display: isLoading ? "none" : "block"}}>
+                                        <h1 className='text-4xl font-bold'>{fetchedCourses[0].title}</h1>
+                                        <p>{fetchedCourses[0].longDescription}</p>
+                                    </div>
+                                </div>
+                                <div className='max-h-[196px] min-w-1/3' style={{display: isLoading ? "none" : "block"}}>
+                                    <img src={fetchedCourses[0].thumbnailUrl}
+                                         className='h-full ml-auto rounded-2xl ring-2 ring-primary'/>
+                                </div>
                             </div>
-                            <h1 className='text-4xl font-bold'>TITLE OF SOME FEATURED COURSE FETCHED IN THE DATABASE</h1>
-                            <div className='mt-auto flex flex-row'>
-                                {/*<p className='mt-auto'>Social icons here...</p>*/}
-                                <div className='ml-auto'>
-                                    <button className='bg-muted-foreground/50 w-[48px] h-[48px] rounded-full group/arrowParent hover:scale-[102%] transition-transform cursor-pointer'>
-                                        <ArrowRight className='m-auto h-full group-hover/arrowParent:translate-x-0.5 transition-transform'/>
-                                    </button>
+                            <div className='mt-16 flex'>
+                                <div className='mt-auto'>
+                                    <p>Instructor: {fetchedCourses[0].instructorName}</p>
+                                </div>
+                                <div className='ml-auto ' style={{display: isLoading ? "none" : "block"}}>
+                                    <Link href={`/courses/${fetchedCourses[0].id}`} className=''>
+                                        <button className='w-[48px] h-[48px] bg-muted-foreground/50  rounded-full group/arrowParent hover:scale-[102%] transition-transform cursor-pointer'>
+                                            <ArrowRight className='m-auto h-full group-hover/arrowParent:translate-x-0.5 transition-transform'/>
+                                        </button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -47,7 +102,7 @@ export function HomeCourseHighlight()
                                 </div>
                                 <div className='min-h-[345px] grow rounded-2xl flex flex-col
                     bg-[url(https://images.unsplash.com/photo-1683322499436-f4383dd59f5a?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)] '>
-                                    <div className='rounded-2xl bg-gradient-to-t from-primary/50 to-background-50/0 h-1/3 flex p-8 mt-auto'>
+                                    <div className='rounded-2xl bg-gradient-to-t from-primary/30 to-background-50/0 h-1/3 flex p-8 mt-auto'>
 
                                         <p className='text-white text-xl font-bold mt-auto'>Cloud Infra 2026</p>
                                     </div>

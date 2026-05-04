@@ -23,11 +23,11 @@ export function TopHero() {
                     <div className='w-full flex'>
                         <Link href={"/learn"}
                               className='w-3/8 mx-auto'>
-                            <button className='select-none rounded-lg ring-1 w-full bg-primary text-background ring-ring p-4 hover:-translate-y-0.5 transition-all cursor-pointer'>Start your journey</button>
+                            <button className='select-none rounded-lg ring-1 w-full bg-primary text-background ring-ring p-4 hover:drop-shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer'>Start your journey</button>
                         </Link>
                         <Link href={"/courses"}
                               className='w-3/8 mx-auto'>
-                            <button className='select-none rounded-lg ring-1 w-full bg-background p-4 hover:-translate-y-0.5 transition-all cursor-pointer'>Browse Courses</button>
+                            <button className='select-none rounded-lg ring-1 w-full bg-background p-4 hover:drop-shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer'>Browse Courses</button>
                         </Link>
                     </div>
                 </div>
