@@ -102,7 +102,7 @@ export function HomeHighlightedCourseCards({ CardGap } : { CardGap: number })
                 </div>
             </div>
 
-            <div className='min-w-[416px] mx-auto xl:mx-0 xl:w-2/6 h-1/2 bg-primary rounded-2xl text-background p-8'> {/*w-[357px] h-[148px]*/}
+            <div className='sm:min-w-[416px] mx-auto xl:mx-0 xl:w-2/6 h-1/2 bg-primary rounded-2xl text-background p-8'> {/*w-[357px] h-[148px]*/}
                 <CloudCheck className='scale-125'/>
                 <div className='flex gap-2'>
                     <h1 className='font-bold text-3xl '>{highlightedCourse.rating}</h1>

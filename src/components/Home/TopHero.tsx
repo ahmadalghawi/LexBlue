@@ -10,10 +10,10 @@ export function TopHero() {
                         <p>ENGINEERING & TECH</p>
                     </div>
 
-                    <div className='text-[72px]/18 '>
+                    <div className='text-[54px]/14 sm:text-[72px]/18 '>
                         <h1 className='font-bold font-headline'>Artisanal Digital Craft:</h1>
                         <div className='h-[16px]'/>
-                        <h1 className='font-bold text-primary font-label text-[72px]/24'>Mastering the Tech Stack.</h1>
+                        <h1 className='font-bold text-primary font-label text-[54px]/15 sm:text-[72px]/24'>Mastering the Tech Stack.</h1>
                     </div>
 
                     <p className='mt-6 mb-12'>
