@@ -41,7 +41,13 @@ export function HomeHighlightedCourseCards({ CardGap } : { CardGap: number })
     if (isLoading)
     {
         return (
-            <div className=' xl:w-4/6 min-h-[386px] bg-background xl:rounded-2xl p-8 flex flex-col gap-2'>
+            <div className='w-full flex flex-col xl:flex-row' style={{gap: CardGap}}>
+                <div className=' xl:w-4/6 min-h-[386px] bg-background xl:rounded-2xl p-8 flex flex-col gap-2'>
+                </div>
+                <div className='min-w-[416px] mx-auto xl:mx-0 xl:w-2/6 h-1/2 bg-primary rounded-2xl text-background p-8'> {/*w-[357px] h-[148px]*/}
+                    <div className='flex gap-2'>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -49,9 +55,15 @@ export function HomeHighlightedCourseCards({ CardGap } : { CardGap: number })
     if (!highlightedCourse)
     {
         return (
+        <div className='w-full flex flex-col xl:flex-row' style={{gap: CardGap}}>
             <div className=' xl:w-4/6 min-h-[386px] bg-background xl:rounded-2xl p-8 flex flex-col gap-2'>
                 <p> There was an error loading courses! </p>
             </div>
+            <div className='min-w-[416px] mx-auto xl:mx-0 xl:w-2/6 h-1/2 bg-primary rounded-2xl text-background p-8'> {/*w-[357px] h-[148px]*/}
+                <div className='flex gap-2'>
+                </div>
+            </div>
+        </div>
         );
     }
 
