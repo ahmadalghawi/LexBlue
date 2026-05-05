@@ -1,7 +1,7 @@
 import {ArrowRight, CloudCheck, Monitor, Shield} from "lucide-react";
 import Link from "next/link";
 import {TopHero} from "@/components/Home/TopHero";
-import {HomeCourseHighlight} from "@/components/Home/HomeCourseHighlight";
+import {HomeCourseHighlight} from "@/components/Home/CourseHighlight/HomeCourseHighlight";
 import {EmailList} from "@/components/Home/EmailList";
 
 export const metadata = {
