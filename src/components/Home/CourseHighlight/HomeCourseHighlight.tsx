@@ -21,6 +21,7 @@ export function HomeCourseHighlight()
                         <HomeHighlightedCourseCards CardGap={32}/> {/* 8rem -> 32px */}
 
                     </div>
+                    {/* TODO: Decide if we want the extra cards or not... */}
                     {/*<div className='h-[45%]'>
                         <div className='flex flex-col xl:flex-row gap-8 h-full'>
                             <div className='min-h-[345px] w-[345px] mx-auto xl:mx-0 xl:w-4/6 flex flex-col xl:grid xl:grid-cols-2 gap-8'>
