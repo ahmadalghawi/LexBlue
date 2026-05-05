@@ -20,13 +20,13 @@ export function TopHero() {
                         Build your future with curated engineering paths, from system architecture to elegant code, we master the complexity of the modern IT landscape.
                     </p>
 
-                    <div className='w-full flex'>
+                    <div className='w-full flex flex-col gap-6 sm:flex-row sm:gap-0 '>
                         <Link href={"/learn"}
-                              className='w-3/8 mx-auto'>
+                              className='sm:w-3/8 mx-auto'>
                             <button className='select-none rounded-lg ring-1 w-full bg-primary text-background ring-ring p-4 hover:drop-shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer'>Start your journey</button>
                         </Link>
                         <Link href={"/courses"}
-                              className='w-3/8 mx-auto'>
+                              className='sm:w-3/8 mx-auto'>
                             <button className='select-none rounded-lg ring-1 w-full bg-background p-4 hover:drop-shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer'>Browse Courses</button>
                         </Link>
                     </div>
