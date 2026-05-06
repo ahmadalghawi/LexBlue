@@ -1,6 +1,5 @@
 import AuthGuard from "@/components/auth/AuthGuard";
 import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 
 export default function ProtectedLayout({
   children,
@@ -9,11 +8,11 @@ export default function ProtectedLayout({
 }) {
   return (
     <AuthGuard>
-      <Navbar />
-      <div className="flex min-h-screen bg-muted/20">
-        <main className="flex-grow">{children}</main>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 px-4 py-6">{children}</main>
       </div>
-      <Footer />
     </AuthGuard>
   );
 }
+
