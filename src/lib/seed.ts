@@ -1,8 +1,8 @@
-import { collection, addDoc, setDoc, doc, getDocs, query, where, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { collection, addDoc, setDoc, doc, getDocs, query, where, serverTimestamp, deleteDoc } from "firebase/firestore";
+import { db } from "@/lib/firestore";
 
 // ============================================================
-// CURSO DE PRUEBA CON IDs FIJOS (para My Learning)
+// TEST COURSE WITH FIXED IDs
 // ============================================================
 export const TEST_COURSE_ID = "test-course-cloud";
 
@@ -30,7 +30,7 @@ export const testCourseData = {
           id: "les-1",
           title: "Environment Setup",
           order: 0,
-          videoUrl: "https://www.youtube.com/embed/3c-iBn73dDE",  // Docker Tutorial for Beginners
+          videoUrl: "https://www.youtube.com/embed/3c-iBn73dDE",
           duration: 560,
           isFree: true,
           description: "Setting up your development environment."
@@ -39,51 +39,25 @@ export const testCourseData = {
           id: "les-2",
           title: "Deploying to the Cloud",
           order: 1,
-          videoUrl: "https://www.youtube.com/embed/PGyhBwLyK2U",  // AWS EC2 Tutorial
+          videoUrl: "https://www.youtube.com/embed/PGyhBwLyK2U",
           duration: 2060,
           isFree: false,
           description: "Transition from local to production-grade cloud environments."
-        }
-      ]
-    },
-    {
-      id: "mod-2",
-      title: "Module 2: Containerization",
-      order: 1,
-      lessons: [
-        {
-          id: "les-3",
-          title: "Containerization with Docker",
-          order: 0,
-          videoUrl: "https://www.youtube.com/embed/fqMOX6JJhGo",  // Docker Tutorial
-          duration: 735,
-          isFree: false,
-          description: "Containerize your applications using Docker."
-        },
-        {
-          id: "les-4",
-          title: "Continuous Integration",
-          order: 1,
-          videoUrl: "https://www.youtube.com/embed/scEDHsr3APg",  // GitHub Actions CI/CD
-          duration: 525,
-          isFree: false,
-          description: "Set up CI/CD pipelines."
-        },
-        {
-          id: "les-5",
-          title: "Monitoring & Observability",
-          order: 2,
-          videoUrl: "https://www.youtube.com/embed/h4Sl21AKiDg",  // Kubernetes Monitoring
-          duration: 600,
-          isFree: false,
-          description: "Implement monitoring for your cloud apps."
         }
       ]
     }
   ]
 };
 
-// Crear curso de prueba
+// Clear existing courses
+export const clearCourses = async () => {
+  const querySnapshot = await getDocs(collection(db, "courses"));
+  const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+  await Promise.all(deletePromises);
+  console.log("Cleared all courses from Firestore.");
+};
+
+// Create test course
 export const seedTestCourse = async (): Promise<string> => {
   await setDoc(doc(db, "courses", TEST_COURSE_ID), {
     ...testCourseData,
@@ -94,9 +68,8 @@ export const seedTestCourse = async (): Promise<string> => {
   return TEST_COURSE_ID;
 };
 
-// Crear enrollment para un usuario
+// Create enrollment for a user
 export const seedTestEnrollment = async (userId: string): Promise<string> => {
-  // Verificar si ya existe
   const existing = await getDocs(
     query(
       collection(db, "enrollments"),
@@ -109,7 +82,6 @@ export const seedTestEnrollment = async (userId: string): Promise<string> => {
     return existing.docs[0].id;
   }
 
-  // Crear nuevo enrollment
   const docRef = await addDoc(collection(db, "enrollments"), {
     userId,
     courseId: TEST_COURSE_ID,
@@ -124,7 +96,6 @@ export const seedTestEnrollment = async (userId: string): Promise<string> => {
   return docRef.id;
 };
 
-// Seed completo para My Learning
 export const seedMyLearningData = async (userId: string) => {
   const courseId = await seedTestCourse();
   const enrollmentId = await seedTestEnrollment(userId);
@@ -132,11 +103,13 @@ export const seedMyLearningData = async (userId: string) => {
 };
 
 export const seedDemoCourses = async () => {
+  await clearCourses();
+
   const demoCourses = [
     {
       title: "JavaScript for Beginners",
       description: "Learn JS from scratch with practical projects.",
-      longDescription: "A complete guide to modern JavaScript covering variables, data types, functions, and the DOM. By the end of this course, you will be able to build interactive web applications.",
+      longDescription: "A complete guide to modern JavaScript covering variables, data types, functions, and the DOM.",
       category: "JavaScript",
       level: "Beginner",
       thumbnailUrl: "https://images.unsplash.com/photo-1627398240309-08a9a2165a27?w=800&q=80",
@@ -146,64 +119,18 @@ export const seedDemoCourses = async () => {
       isPublished: true,
       rating: 4.8,
       totalStudents: 125,
-      tags: ["javascript", "web", "beginner"],
+      tags: ["javascript", "web"],
       modules: [
         {
-          id: crypto.randomUUID(),
-          title: "Module 1: Getting Started",
-          order: 0,
-          lessons: [
-            {
-              id: crypto.randomUUID(),
-              title: "What is JavaScript?",
-              order: 0,
-              videoUrl: "https://www.youtube.com/embed/W6NZfCO5SIk",
-              duration: 600,
-              isFree: true,
-              description: "Introduction to the JavaScript language."
-            },
-            {
-              id: crypto.randomUUID(),
-              title: "Variables and Data Types",
-              order: 1,
-              videoUrl: "https://www.youtube.com/embed/edlFjlzxkSI",
-              duration: 780,
-              isFree: false,
-              description: "Learn about let, const, and basic data types."
-            }
-          ]
-        },
-        {
-          id: crypto.randomUUID(),
-          title: "Module 2: DOM Manipulation",
-          order: 1,
-          lessons: [
-            {
-              id: crypto.randomUUID(),
-              title: "Selecting Elements",
-              order: 0,
-              videoUrl: "https://www.youtube.com/embed/0X6ZqY4m7qM",
-              duration: 540,
-              isFree: false,
-              description: "How to find elements in the DOM."
-            },
-            {
-              id: crypto.randomUUID(),
-              title: "Event Listeners",
-              order: 1,
-              videoUrl: "https://www.youtube.com/embed/G_mY1xGZg-c",
-              duration: 920,
-              isFree: false,
-              description: "Making your web pages interactive."
-            }
-          ]
+          id: crypto.randomUUID(), title: "Module 1: Basics", order: 0,
+          lessons: [{ id: crypto.randomUUID(), title: "Intro", order: 0, videoUrl: "https://www.youtube.com/embed/W6NZfCO5SIk", duration: 600, isFree: true, description: "Intro to JS." }]
         }
       ]
     },
     {
       title: "React Masterclass",
       description: "Build scalable frontend applications with React 19.",
-      longDescription: "Dive deep into React hooks, context API, state management, and Server Components. Ideal for developers who already know JavaScript.",
+      longDescription: "Dive deep into React hooks, context API, and Server Components.",
       category: "React",
       level: "Intermediate",
       thumbnailUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80",
@@ -213,55 +140,18 @@ export const seedDemoCourses = async () => {
       isPublished: true,
       rating: 4.9,
       totalStudents: 85,
-      tags: ["react", "frontend", "hooks", "nextjs"],
+      tags: ["react", "frontend"],
       modules: [
         {
-          id: crypto.randomUUID(),
-          title: "Module 1: React Fundamentals",
-          order: 0,
-          lessons: [
-            {
-              id: crypto.randomUUID(),
-              title: "Thinking in React",
-              order: 0,
-              videoUrl: "https://www.youtube.com/embed/dpw9EHDh2bM",
-              duration: 900,
-              isFree: true,
-              description: "How to approach building UIs with components."
-            }
-          ]
-        },
-        {
-          id: crypto.randomUUID(),
-          title: "Module 2: Advanced Hooks",
-          order: 1,
-          lessons: [
-            {
-              id: crypto.randomUUID(),
-              title: "useMemo and useCallback",
-              order: 0,
-              videoUrl: "https://www.youtube.com/embed/NWjZ5M6FfW8",
-              duration: 1100,
-              isFree: false,
-              description: "Optimizing component performance."
-            },
-            {
-              id: crypto.randomUUID(),
-              title: "Custom Hooks",
-              order: 1,
-              videoUrl: "https://www.youtube.com/embed/6ThXaZrtPR4",
-              duration: 950,
-              isFree: false,
-              description: "Extracting reusable logic from components."
-            }
-          ]
+          id: crypto.randomUUID(), title: "Module 1: Fundamentals", order: 0,
+          lessons: [{ id: crypto.randomUUID(), title: "Thinking in React", order: 0, videoUrl: "https://www.youtube.com/embed/dpw9EHDh2bM", duration: 900, isFree: true, description: "Mental models." }]
         }
       ]
     },
     {
       title: "Fullstack Next.js with App Router",
-      description: "The ultimate guide to Next.js 15 and Server Components.",
-      longDescription: "Master the App Router, Server Actions, and database integration with Prisma and Supabase. Build a real-world production app from scratch.",
+      description: "The ultimate guide to Next.js 15.",
+      longDescription: "Master the App Router, Server Actions, and database integration.",
       category: "Next.js",
       level: "Advanced",
       thumbnailUrl: "https://images.unsplash.com/photo-1618477247222-acbdb0e159b3?w=800&q=80",
@@ -271,46 +161,89 @@ export const seedDemoCourses = async () => {
       isPublished: true,
       rating: 5.0,
       totalStudents: 42,
-      tags: ["nextjs", "fullstack", "typescript", "prisma"],
+      tags: ["nextjs", "fullstack"],
       modules: [
         {
-          id: crypto.randomUUID(),
-          title: "Module 1: App Router Basics",
-          order: 0,
-          lessons: [
-            {
-              id: crypto.randomUUID(),
-              title: "Routing and Layouts",
-              order: 0,
-              videoUrl: "https://www.youtube.com/embed/ZjAqacIC_3c",
-              duration: 1200,
-              isFree: true,
-              description: "Understanding the new file-based routing system."
-            }
-          ]
+          id: crypto.randomUUID(), title: "Module 1: Routing", order: 0,
+          lessons: [{ id: crypto.randomUUID(), title: "App Router Basics", order: 0, videoUrl: "https://www.youtube.com/embed/ZjAqacIC_3c", duration: 1200, isFree: true, description: "Next.js routing." }]
+        }
+      ]
+    },
+    {
+      title: "Cybersecurity Fundamentals",
+      description: "Protect systems and networks from digital attacks.",
+      longDescription: "Learn core concepts of cybersecurity, network security, and cryptography.",
+      category: "Security",
+      level: "Beginner",
+      thumbnailUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80",
+      instructorName: "SecOps Academy",
+      price: 59.99,
+      isFree: false,
+      isPublished: true,
+      rating: 4.8,
+      totalStudents: 156,
+      tags: ["security", "cyber"],
+      modules: [
+        {
+          id: crypto.randomUUID(), title: "Module 1: Landscape", order: 0,
+          lessons: [{ id: crypto.randomUUID(), title: "The Security Landscape", order: 0, videoUrl: "https://www.youtube.com/embed/z5nc9MDbvkw", duration: 900, isFree: true, description: "Threats overview." }]
         },
         {
-          id: crypto.randomUUID(),
-          title: "Module 2: Data Fetching",
-          order: 1,
-          lessons: [
-            {
-              id: crypto.randomUUID(),
-              title: "Server vs Client Components",
-              order: 0,
-              videoUrl: "https://www.youtube.com/embed/843nec-IvW0",
-              duration: 1050,
-              isFree: false,
-              description: "When to use use client and when to stay on the server."
-            }
-          ]
+          id: crypto.randomUUID(), title: "Module 2: Network", order: 1,
+          lessons: [{ id: crypto.randomUUID(), title: "Firewalls & VPNs", order: 0, videoUrl: "https://www.youtube.com/embed/gzSnhWvll9k", duration: 1200, isFree: false, description: "Edge security." }]
+        }
+      ]
+    },
+    {
+      title: "AWS Cloud Architect",
+      description: "Design resilient cloud architectures.",
+      longDescription: "Complete preparation for the SAA-C03 exam.",
+      category: "Cloud",
+      level: "Advanced",
+      thumbnailUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80",
+      instructorName: "Cloud Academy",
+      price: 129.99,
+      isFree: false,
+      isPublished: true,
+      rating: 5.0,
+      totalStudents: 34,
+      tags: ["aws", "cloud"],
+      modules: [
+        {
+          id: crypto.randomUUID(), title: "Module 1: Compute", order: 0,
+          lessons: [{ id: crypto.randomUUID(), title: "EC2 Basics", order: 0, videoUrl: "https://www.youtube.com/embed/3c-iBn73dDE", duration: 1200, isFree: true, description: "AWS servers." }]
+        },
+        {
+          id: crypto.randomUUID(), title: "Module 2: Storage", order: 1,
+          lessons: [{ id: crypto.randomUUID(), title: "S3 Mastery", order: 0, videoUrl: "https://www.youtube.com/embed/77lMCiiMIFk", duration: 950, isFree: false, description: "Object storage." }]
+        }
+      ]
+    },
+    {
+      title: "UI/UX Design Essentials",
+      description: "Design beautiful interfaces with Figma.",
+      longDescription: "Learn principles of design, color theory, and prototyping.",
+      category: "Design",
+      level: "Beginner",
+      thumbnailUrl: "https://images.unsplash.com/photo-1586717791821-3f44a563dc4c?w=800&q=80",
+      instructorName: "Sarah Chen",
+      price: 29.99,
+      isFree: false,
+      isPublished: true,
+      rating: 4.6,
+      totalStudents: 340,
+      tags: ["design", "figma"],
+      modules: [
+        {
+          id: crypto.randomUUID(), title: "Module 1: Principles", order: 0,
+          lessons: [{ id: crypto.randomUUID(), title: "Intro to UI/UX", order: 0, videoUrl: "https://www.youtube.com/embed/zHAa-m16NGk", duration: 800, isFree: true, description: "Design fundamentals." }]
         }
       ]
     },
     {
       title: "Python for Data Science",
-      description: "Master Python for data analysis and visualization.",
-      longDescription: "Learn Python from the ground up and master libraries like NumPy, Pandas, and Matplotlib to analyze and visualize complex datasets.",
+      description: "Analyze and visualize data with Python.",
+      longDescription: "Master NumPy, Pandas, and Matplotlib.",
       category: "Python",
       level: "Beginner",
       thumbnailUrl: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80",
@@ -320,23 +253,78 @@ export const seedDemoCourses = async () => {
       isPublished: true,
       rating: 4.7,
       totalStudents: 210,
-      tags: ["python", "data science", "pandas"],
+      tags: ["python", "data science"],
       modules: [
         {
-          id: crypto.randomUUID(),
-          title: "Module 1: Python Basics",
-          order: 0,
-          lessons: [
-            {
-              id: crypto.randomUUID(),
-              title: "Installation and Setup",
-              order: 0,
-              videoUrl: "https://www.youtube.com/embed/YYXdXT2l-Gg",
-              duration: 450,
-              isFree: true,
-              description: "Setting up your Python environment."
-            }
-          ]
+          id: crypto.randomUUID(), title: "Module 1: Intro", order: 0,
+          lessons: [{ id: crypto.randomUUID(), title: "Setup", order: 0, videoUrl: "https://www.youtube.com/embed/YYXdXT2l-Gg", duration: 450, isFree: true, description: "Environment setup." }]
+        }
+      ]
+    },
+    {
+      title: "Flutter Mobile Development",
+      description: "Build native apps with a single codebase.",
+      longDescription: "Learn Dart and Flutter for iOS and Android development.",
+      category: "Mobile",
+      level: "Intermediate",
+      thumbnailUrl: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80",
+      instructorName: "Dart Guru",
+      price: 39.99,
+      isFree: false,
+      isPublished: true,
+      rating: 4.7,
+      totalStudents: 412,
+      tags: ["flutter", "dart"],
+      modules: [
+        {
+          id: crypto.randomUUID(), title: "Module 1: Dart", order: 0,
+          lessons: [{ id: crypto.randomUUID(), title: "Syntax Basics", order: 0, videoUrl: "https://www.youtube.com/embed/5flXf8nuq60", duration: 1000, isFree: true, description: "Language intro." }]
+        }
+      ]
+    },
+    {
+      title: "Node.js Backend Mastery",
+      description: "Build scalable backends with Node.js and Express.",
+      longDescription: "Learn REST APIs, Authentication, and Database modeling with MongoDB.",
+      category: "Backend",
+      level: "Intermediate",
+      thumbnailUrl: "https://images.unsplash.com/photo-1533709752231-3bc35fbc4a78?w=800&q=80",
+      instructorName: "Server Side Pro",
+      price: 45.00,
+      isFree: false,
+      isPublished: true,
+      rating: 4.9,
+      totalStudents: 220,
+      tags: ["nodejs", "express", "mongodb"],
+      modules: [
+        {
+          id: crypto.randomUUID(), title: "Module 1: Express Basics", order: 0,
+          lessons: [{ id: crypto.randomUUID(), title: "Setting up Server", order: 0, videoUrl: "https://www.youtube.com/embed/Oe421EPjeBE", duration: 900, isFree: true, description: "Starting with Express." }]
+        },
+        {
+          id: crypto.randomUUID(), title: "Module 2: Auth", order: 1,
+          lessons: [{ id: crypto.randomUUID(), title: "JWT Auth", order: 0, videoUrl: "https://www.youtube.com/embed/7nafaH9SddU", duration: 1500, isFree: false, description: "Securing routes." }]
+        }
+      ]
+    },
+    {
+      title: "AI & Machine Learning Foundations",
+      description: "Understand the future with AI and ML.",
+      longDescription: "Deep dive into Transformers and Generative models.",
+      category: "AI",
+      level: "Advanced",
+      thumbnailUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80",
+      instructorName: "AI Research Lab",
+      price: 99.99,
+      isFree: false,
+      isPublished: true,
+      rating: 4.9,
+      totalStudents: 56,
+      tags: ["ai", "ml"],
+      modules: [
+        {
+          id: crypto.randomUUID(), title: "Module 1: Deep Learning", order: 0,
+          lessons: [{ id: crypto.randomUUID(), title: "Neural Networks", order: 0, videoUrl: "https://www.youtube.com/embed/aircAruvnKk", duration: 1500, isFree: true, description: "Logic of AI." }]
         }
       ]
     }

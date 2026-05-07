@@ -7,8 +7,8 @@ import type { Course, Enrollment } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { CheckCircle, Loader2, ArrowLeft } from "lucide-react";
 
 export default function CourseDetailClient({ courseId }: { courseId: string }) {
   const { user, loading: authLoading } = useAuth();
@@ -18,6 +18,7 @@ export default function CourseDetailClient({ courseId }: { courseId: string }) {
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const searchParams = useSearchParams();
   const [enrolling, setEnrolling] = useState(false);
   const [enrollSuccess, setEnrollSuccess] = useState(false);
 
@@ -72,6 +73,43 @@ export default function CourseDetailClient({ courseId }: { courseId: string }) {
     }
   }, [authLoading, checkEnrollment]);
 
+  // Handle successful return from Stripe
+  useEffect(() => {
+    const isSuccess = searchParams.get("success");
+    if (isSuccess && user && course && !enrollment && !enrolling) {
+      // Auto-enroll the user upon successful payment return
+      const completeEnrollment = async () => {
+        setEnrolling(true);
+        try {
+          const totalLessons = course?.modules?.reduce((acc, m) => acc + m.lessons.length, 0) ?? 0;
+          const firstModule = course?.modules?.[0];
+          const firstLesson = firstModule?.lessons?.[0];
+
+          await addDoc(collection(db, "enrollments"), {
+            userId: user.uid,
+            courseId: courseId,
+            progress: 0,
+            completedLessons: [],
+            lastLessonId: firstLesson?.id ?? null,
+            lastModuleId: firstModule?.id ?? null,
+            enrolledAt: serverTimestamp(),
+            completedAt: null,
+          });
+
+          setEnrollSuccess(true);
+          await checkEnrollment();
+          // Clear URL params to prevent re-triggering
+          router.replace(`/courses/${courseId}`);
+        } catch (err) {
+          console.error("Failed to save enrollment after payment:", err);
+        } finally {
+          setEnrolling(false);
+        }
+      };
+      completeEnrollment();
+    }
+  }, [searchParams, user, course, enrollment, checkEnrollment, courseId, router, enrolling]);
+
   // Handle Enroll button click
   const handleEnroll = async () => {
     if (!user) {
@@ -86,27 +124,48 @@ export default function CourseDetailClient({ courseId }: { courseId: string }) {
 
     setEnrolling(true);
     try {
-      const totalLessons = course?.modules?.reduce((acc, m) => acc + m.lessons.length, 0) ?? 0;
-      const firstModule = course?.modules?.[0];
-      const firstLesson = firstModule?.lessons?.[0];
+      if (course?.isFree) {
+        // Free course: enroll immediately
+        const firstModule = course?.modules?.[0];
+        const firstLesson = firstModule?.lessons?.[0];
 
-      await addDoc(collection(db, "enrollments"), {
-        userId: user.uid,
-        courseId: courseId,
-        progress: 0,
-        completedLessons: [],
-        lastLessonId: firstLesson?.id ?? null,
-        lastModuleId: firstModule?.id ?? null,
-        enrolledAt: serverTimestamp(),
-        completedAt: null,
-      });
+        await addDoc(collection(db, "enrollments"), {
+          userId: user.uid,
+          courseId: courseId,
+          progress: 0,
+          completedLessons: [],
+          lastLessonId: firstLesson?.id ?? null,
+          lastModuleId: firstModule?.id ?? null,
+          enrolledAt: serverTimestamp(),
+          completedAt: null,
+        });
 
-      setEnrollSuccess(true);
-      // Re-check enrollment to get the new doc
-      await checkEnrollment();
+        setEnrollSuccess(true);
+        await checkEnrollment();
+      } else {
+        // Paid course: redirect to Stripe Checkout
+        const res = await fetch("/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            courseId,
+            courseTitle: course?.title,
+            coursePrice: course?.price,
+            courseThumbnail: course?.thumbnailUrl,
+            userId: user.uid,
+          }),
+        });
+
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          console.error("Stripe error:", data.error);
+          setEnrolling(false);
+        }
+      }
     } catch (err) {
-      console.error("Failed to enroll:", err);
-    } finally {
+      console.error("Failed to process enrollment:", err);
       setEnrolling(false);
     }
   };
@@ -132,6 +191,7 @@ export default function CourseDetailClient({ courseId }: { courseId: string }) {
     }
 
     return (
+      <>
       <button
         onClick={handleEnroll}
         disabled={enrolling || authLoading}
@@ -145,9 +205,15 @@ export default function CourseDetailClient({ courseId }: { courseId: string }) {
         ) : !user ? (
           "Sign In to Enroll"
         ) : (
-          course?.isFree ? "Enroll for Free" : `Enroll Now — $${course?.price}`
+          course?.isFree ? "Enroll for Free" : `Enroll with Stripe — $${course?.price}`
         )}
       </button>
+      {searchParams.get("canceled") && (
+        <p className="text-rose-500 text-sm text-center font-bold mt-2">
+          Payment was canceled. You can try again.
+        </p>
+      )}
+    </>
     );
   };
 
@@ -181,6 +247,16 @@ export default function CourseDetailClient({ courseId }: { courseId: string }) {
       <section className="relative pt-20 pb-8 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 -z-10" />
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/3 w-[800px] h-[800px] bg-primary/20 blur-[120px] rounded-full -z-10" />
+
+        <div className="container mx-auto px-6 mb-8">
+          <Link 
+            href="/courses" 
+            className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            Back to Catalog
+          </Link>
+        </div>
 
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-[1fr_400px] gap-12 items-start">

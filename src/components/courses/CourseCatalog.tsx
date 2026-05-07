@@ -7,8 +7,8 @@ import CourseCard from "@/components/courses/CourseCard";
 import { db } from "@/lib/firestore";
 import type { Course } from "@/types";
 
-const categories = ["React", "Python", "JavaScript"];
 const levels = ["Beginner", "Intermediate", "Advanced"];
+const prices = ["Free", "Paid"];
 
 // This component handles:
 // 1. Fetching courses from Firestore
@@ -17,10 +17,12 @@ const levels = ["Beginner", "Intermediate", "Advanced"];
 // 4. Displaying course cards
 export default function CourseCatalog() {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
+  const [selectedPrice, setSelectedPrice] = useState("");
 
   useEffect(() => {
     async function fetchCourses() {
@@ -42,6 +44,10 @@ export default function CourseCatalog() {
         });
 
         setCourses(coursesData);
+
+        // Extract unique categories from the loaded courses
+        const uniqueCategories = Array.from(new Set(coursesData.map((c) => c.category))).filter(Boolean);
+        setCategories(uniqueCategories);
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
@@ -59,7 +65,11 @@ export default function CourseCatalog() {
 
     const matchesLevel = selectedLevel === "" || course.level === selectedLevel;
 
-    return matchesCategory && matchesLevel;
+    const matchesPrice =
+      selectedPrice === "" ||
+      (selectedPrice === "Free" ? course.isFree : !course.isFree);
+
+    return matchesCategory && matchesLevel && matchesPrice;
   });
 
   return (
@@ -152,13 +162,54 @@ export default function CourseCatalog() {
           </div>
         </div>
 
+        {/* Price filter */}
+        <div className="mt-5 rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <h3 className="mb-4 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+            Price
+          </h3>
+
+          <div className="space-y-4">
+            {prices.map((price) => {
+              const isSelected = selectedPrice === price;
+
+              return (
+                <button
+                  key={price}
+                  type="button"
+                  onClick={() => setSelectedPrice(isSelected ? "" : price)}
+                  className="flex items-center gap-3"
+                >
+                  <span
+                    className={`flex h-6 w-6 items-center justify-center rounded-lg border-2 ${
+                      isSelected
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background"
+                    }`}
+                  >
+                    {isSelected ? "✓" : ""}
+                  </span>
+
+                  <span
+                    className={`font-medium ${
+                      isSelected ? "text-primary" : "text-muted-foreground"
+                    }`}
+                  >
+                    {price}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Clear filters button */}
-        {(selectedCategory || selectedLevel) && (
+        {(selectedCategory || selectedLevel || selectedPrice) && (
           <button
             type="button"
             onClick={() => {
               setSelectedCategory("");
               setSelectedLevel("");
+              setSelectedPrice("");
             }}
             className="mt-5 w-full rounded-full border border-border bg-card px-5 py-2 text-sm font-semibold text-foreground hover:bg-muted"
           >

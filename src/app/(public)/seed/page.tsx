@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { seedTestCourse, seedTestEnrollment, seedMyLearningData } from "@/lib/seed";
+import { seedTestCourse, seedTestEnrollment, seedMyLearningData, seedDemoCourses } from "@/lib/seed";
 
 export default function SeedPage() {
   const { user, loading: authLoading } = useAuth();
@@ -47,6 +47,18 @@ export default function SeedPage() {
     try {
       const result = await seedMyLearningData(user.uid);
       setStatus(`Done! Course: ${result.courseId}, Enrollment: ${result.enrollmentId}`);
+    } catch (error: any) {
+      setStatus(`Error: ${error.message}`);
+    }
+    setLoading(false);
+  };
+
+  const handleSeedDemo = async () => {
+    setLoading(true);
+    setStatus("Wiping existing courses and seeding new catalog...");
+    try {
+      const results = await seedDemoCourses();
+      setStatus(`Success! Seeded ${results.length} new courses.`);
     } catch (error: any) {
       setStatus(`Error: ${error.message}`);
     }
@@ -100,6 +112,17 @@ export default function SeedPage() {
         >
           Create All (Course + Enrollment)
         </button>
+
+        <div className="pt-8 border-t">
+          <h2 className="text-xl font-bold mb-4">Production Seed</h2>
+          <button
+            onClick={handleSeedDemo}
+            disabled={loading}
+            className="w-full bg-amber-500 text-white py-4 px-4 rounded-xl font-bold hover:bg-amber-600 transition disabled:opacity-50 shadow-lg"
+          >
+            Seed Demo Courses (Wipe & Reload Catalog)
+          </button>
+        </div>
       </div>
 
       {/* Status */}
