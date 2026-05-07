@@ -96,13 +96,13 @@
 .dark {
   --background: #0A0A0A;
   --foreground: #ffffff;
-  --card: #121212;
+  --card: #002D33;
   --card-foreground: #ffffff;
   --popover: #0A0A0A;
   --popover-foreground: #ffffff;
   --primary: #00F0FF;
   --primary-foreground: #0A0A0A;
-  --secondary: #002D33;
+  --secondary: #121212;
   --secondary-foreground: #00F0FF;
   --muted: #1f1f1f;
   --muted-foreground: #a1a1aa;

@@ -17,6 +17,9 @@ export interface Lesson {
   duration: number;      // seconds
   isFree?: boolean;
   description?: string;
+  level?: string;
+  rating?: number;
+  totalStudents?: number;
 }
 
 export interface Module {
@@ -52,10 +55,10 @@ export interface Enrollment {
   id: string;
   userId: string;
   courseId: string;
-  progress: number;           // 0–100
-  completedLessons: string[]; // lessonIds
-  lastLessonId?: string | null;
+  progress: number; // 0-100
+  completedLessons: string[]; // array of lessonIds
+  lastLessonId?: string;
   lastModuleId?: string | null;
   enrolledAt: Timestamp;
-  completedAt?: Timestamp | null;
-}
+  completedAt?: Timestamp;
+  }
