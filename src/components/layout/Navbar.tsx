@@ -25,7 +25,10 @@ export function Navbar() {
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
         {/* Left: Logo + Nav */}
         <div className="flex items-center gap-8">
-          <Link href="/" className="font-headline text-2xl font-bold text-primary tracking-tight">
+          <Link
+            href="/"
+            className="font-headline text-2xl font-bold text-primary tracking-tight"
+          >
             LexBlue
           </Link>
           <nav className="hidden md:flex gap-6">
@@ -35,6 +38,12 @@ export function Navbar() {
             >
               Courses
             </Link>
+            <Link
+              href="/mylearning"
+              className={`text-lg font-medium transition-colors ${pathname.startsWith("/mylearning") ? "text-primary" : "text-foreground hover:text-primary"}`}
+            >
+              My Learning
+            </Link>
             {isLoggedIn && (
               <>
                 <Link
@@ -42,12 +51,6 @@ export function Navbar() {
                   className={`text-lg font-medium transition-colors ${pathname === "/dashboard" ? "text-primary" : "text-foreground hover:text-primary"}`}
                 >
                   Dashboard
-                </Link>
-                <Link
-                  href="/learn"
-                  className={`text-lg font-medium transition-colors ${pathname.startsWith("/learn") ? "text-primary" : "text-foreground hover:text-primary"}`}
-                >
-                  My Learning
                 </Link>
                 {isAdmin && (
                   <Link
