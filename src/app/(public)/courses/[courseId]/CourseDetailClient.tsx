@@ -1,24 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState, useCallback } from "react";
+import { doc, getDoc, collection, query, where, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firestore";
-import type { Course } from "@/types";
-import { notFound } from "next/navigation";
+import type { Course, Enrollment } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { CheckCircle, Loader2 } from "lucide-react";
 
 export default function CourseDetailClient({ courseId }: { courseId: string }) {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+
   const [course, setCourse] = useState<Course | null>(null);
+  const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
+  const [enrollSuccess, setEnrollSuccess] = useState(false);
 
+  // Fetch course data
   useEffect(() => {
     async function fetchCourse() {
       try {
         const docRef = doc(db, "courses", courseId);
         const docSnap = await getDoc(docRef);
-        
+
         if (docSnap.exists()) {
           const data = { id: docSnap.id, ...docSnap.data() } as Course;
           if (data.isPublished) {
@@ -39,6 +48,111 @@ export default function CourseDetailClient({ courseId }: { courseId: string }) {
     fetchCourse();
   }, [courseId]);
 
+  // Check if user is already enrolled
+  const checkEnrollment = useCallback(async () => {
+    if (!user) return;
+    try {
+      const q = query(
+        collection(db, "enrollments"),
+        where("userId", "==", user.uid),
+        where("courseId", "==", courseId)
+      );
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        setEnrollment({ id: snap.docs[0].id, ...snap.docs[0].data() } as Enrollment);
+      }
+    } catch (err) {
+      console.error("Failed to check enrollment:", err);
+    }
+  }, [user, courseId]);
+
+  useEffect(() => {
+    if (!authLoading) {
+      checkEnrollment();
+    }
+  }, [authLoading, checkEnrollment]);
+
+  // Handle Enroll button click
+  const handleEnroll = async () => {
+    if (!user) {
+      router.push(`/login?redirect=/courses/${courseId}`);
+      return;
+    }
+    if (enrollment) {
+      // Already enrolled — go to learn page
+      router.push(`/mylearning`);
+      return;
+    }
+
+    setEnrolling(true);
+    try {
+      const totalLessons = course?.modules?.reduce((acc, m) => acc + m.lessons.length, 0) ?? 0;
+      const firstModule = course?.modules?.[0];
+      const firstLesson = firstModule?.lessons?.[0];
+
+      await addDoc(collection(db, "enrollments"), {
+        userId: user.uid,
+        courseId: courseId,
+        progress: 0,
+        completedLessons: [],
+        lastLessonId: firstLesson?.id ?? null,
+        lastModuleId: firstModule?.id ?? null,
+        enrolledAt: serverTimestamp(),
+        completedAt: null,
+      });
+
+      setEnrollSuccess(true);
+      // Re-check enrollment to get the new doc
+      await checkEnrollment();
+    } catch (err) {
+      console.error("Failed to enroll:", err);
+    } finally {
+      setEnrolling(false);
+    }
+  };
+
+  // ── Render helpers ──────────────────────────────────────────
+
+  const renderEnrollButton = () => {
+    if (enrollSuccess || enrollment) {
+      return (
+        <div className="space-y-3">
+          <div className="w-full flex items-center justify-center gap-2 bg-emerald-500/10 text-emerald-500 font-headline font-bold py-4 rounded-xl text-lg border border-emerald-500/30">
+            <CheckCircle className="w-5 h-5" />
+            You&apos;re Enrolled!
+          </div>
+          <Link
+            href="/mylearning"
+            className="w-full block text-center bg-primary text-primary-foreground font-headline font-bold py-3 rounded-xl hover:bg-primary/90 transition-all active:scale-[0.98]"
+          >
+            Go to My Learning →
+          </Link>
+        </div>
+      );
+    }
+
+    return (
+      <button
+        onClick={handleEnroll}
+        disabled={enrolling || authLoading}
+        className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground font-headline font-bold py-4 rounded-xl text-lg shadow-lg hover:shadow-primary/25 hover:bg-primary/90 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {enrolling ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Enrolling...
+          </>
+        ) : !user ? (
+          "Sign In to Enroll"
+        ) : (
+          course?.isFree ? "Enroll for Free" : `Enroll Now — $${course?.price}`
+        )}
+      </button>
+    );
+  };
+
+  // ── Loading / Error states ──────────────────────────────────
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -53,17 +167,18 @@ export default function CourseDetailClient({ courseId }: { courseId: string }) {
         <h1 className="text-4xl font-headline font-bold mb-4">Course Not Found</h1>
         <p className="text-muted-foreground mb-8">This course might have been removed or is not published yet.</p>
         <Link href="/courses" className="text-primary hover:underline">
-          &larr; Back to Catalog
+          ← Back to Catalog
         </Link>
       </div>
     );
   }
 
+  // ── Main render ─────────────────────────────────────────────
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative pt-20 pb-8 overflow-hidden">
-        {/* Background Effects */}
         <div className="absolute inset-0 bg-primary/5 -z-10" />
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/3 w-[800px] h-[800px] bg-primary/20 blur-[120px] rounded-full -z-10" />
 
@@ -121,13 +236,13 @@ export default function CourseDetailClient({ courseId }: { courseId: string }) {
             {/* Right Column: Checkout Card */}
             <div className="bg-card border border-border rounded-3xl p-6 shadow-2xl sticky top-24">
               <div className="aspect-[16/9] rounded-2xl overflow-hidden mb-6 relative">
-                <Image 
-                  src={course.thumbnailUrl} 
+                <Image
+                  src={course.thumbnailUrl}
                   alt={course.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 400px"
                   priority
-                  className="w-full h-full object-cover"
+                  className="object-cover"
                 />
               </div>
 
@@ -138,12 +253,7 @@ export default function CourseDetailClient({ courseId }: { courseId: string }) {
                   </span>
                 </div>
 
-                <Link 
-                  href={`/login?redirect=/learn/${course.id}`}
-                  className="w-full block text-center bg-primary text-primary-foreground font-headline font-bold py-4 rounded-xl text-lg shadow-lg hover:shadow-primary/25 hover:bg-primary/90 transition-all active:scale-[0.98]"
-                >
-                  Enroll Now
-                </Link>
+                {renderEnrollButton()}
 
                 <div className="pt-6 border-t border-border space-y-4">
                   <h4 className="font-bold text-foreground">This course includes:</h4>
@@ -168,14 +278,13 @@ export default function CourseDetailClient({ courseId }: { courseId: string }) {
       {/* Main Content Section */}
       <section className="container mx-auto px-6 pt-4 pb-20">
         <div className="grid lg:grid-cols-[1fr_400px] gap-12">
-          
           <div className="space-y-12">
             {/* About */}
             <div className="space-y-6">
               <h2 className="font-headline text-3xl font-extrabold text-foreground">
                 About this course
               </h2>
-              <div className="prose prose-invert max-w-none text-muted-foreground">
+              <div className="text-muted-foreground space-y-4">
                 {course.longDescription?.split('\n').map((paragraph, idx) => (
                   <p key={idx}>{paragraph}</p>
                 )) || <p>No detailed description provided.</p>}
