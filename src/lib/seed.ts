@@ -1,5 +1,135 @@
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, setDoc, doc, getDocs, query, where, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+
+// ============================================================
+// CURSO DE PRUEBA CON IDs FIJOS (para My Learning)
+// ============================================================
+export const TEST_COURSE_ID = "test-course-cloud";
+
+export const testCourseData = {
+  title: "Advanced Cloud Architecture",
+  description: "Master cloud deployment with Docker, Kubernetes, and CI/CD.",
+  longDescription: "In this course, you'll learn to deploy production-grade applications to the cloud using modern DevOps practices.",
+  category: "DevOps",
+  level: "Advanced" as const,
+  thumbnailUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80",
+  instructorName: "Cloud Expert",
+  price: 0,
+  isFree: true,
+  isPublished: true,
+  rating: 4.9,
+  totalStudents: 50,
+  tags: ["cloud", "docker", "kubernetes"],
+  modules: [
+    {
+      id: "mod-1",
+      title: "Module 1: Environment Setup",
+      order: 0,
+      lessons: [
+        {
+          id: "les-1",
+          title: "Environment Setup",
+          order: 0,
+          videoUrl: "https://www.youtube.com/embed/3c-iBn73dDE",  // Docker Tutorial for Beginners
+          duration: 560,
+          isFree: true,
+          description: "Setting up your development environment."
+        },
+        {
+          id: "les-2",
+          title: "Deploying to the Cloud",
+          order: 1,
+          videoUrl: "https://www.youtube.com/embed/PGyhBwLyK2U",  // AWS EC2 Tutorial
+          duration: 2060,
+          isFree: false,
+          description: "Transition from local to production-grade cloud environments."
+        }
+      ]
+    },
+    {
+      id: "mod-2",
+      title: "Module 2: Containerization",
+      order: 1,
+      lessons: [
+        {
+          id: "les-3",
+          title: "Containerization with Docker",
+          order: 0,
+          videoUrl: "https://www.youtube.com/embed/fqMOX6JJhGo",  // Docker Tutorial
+          duration: 735,
+          isFree: false,
+          description: "Containerize your applications using Docker."
+        },
+        {
+          id: "les-4",
+          title: "Continuous Integration",
+          order: 1,
+          videoUrl: "https://www.youtube.com/embed/scEDHsr3APg",  // GitHub Actions CI/CD
+          duration: 525,
+          isFree: false,
+          description: "Set up CI/CD pipelines."
+        },
+        {
+          id: "les-5",
+          title: "Monitoring & Observability",
+          order: 2,
+          videoUrl: "https://www.youtube.com/embed/h4Sl21AKiDg",  // Kubernetes Monitoring
+          duration: 600,
+          isFree: false,
+          description: "Implement monitoring for your cloud apps."
+        }
+      ]
+    }
+  ]
+};
+
+// Crear curso de prueba
+export const seedTestCourse = async (): Promise<string> => {
+  await setDoc(doc(db, "courses", TEST_COURSE_ID), {
+    ...testCourseData,
+    id: TEST_COURSE_ID,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return TEST_COURSE_ID;
+};
+
+// Crear enrollment para un usuario
+export const seedTestEnrollment = async (userId: string): Promise<string> => {
+  // Verificar si ya existe
+  const existing = await getDocs(
+    query(
+      collection(db, "enrollments"),
+      where("userId", "==", userId),
+      where("courseId", "==", TEST_COURSE_ID)
+    )
+  );
+
+  if (!existing.empty) {
+    return existing.docs[0].id;
+  }
+
+  // Crear nuevo enrollment
+  const docRef = await addDoc(collection(db, "enrollments"), {
+    userId,
+    courseId: TEST_COURSE_ID,
+    progress: 20,
+    completedLessons: ["les-1"],
+    lastLessonId: "les-2",
+    lastModuleId: "mod-1",
+    enrolledAt: serverTimestamp(),
+    completedAt: null,
+  });
+
+  return docRef.id;
+};
+
+// Seed completo para My Learning
+export const seedMyLearningData = async (userId: string) => {
+  const courseId = await seedTestCourse();
+  const enrollmentId = await seedTestEnrollment(userId);
+  return { courseId, enrollmentId };
+};
 
 export const seedDemoCourses = async () => {
   const demoCourses = [

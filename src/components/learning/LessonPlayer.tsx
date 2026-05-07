@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronRight, Clock, ArrowRight } from "lucide-react";
 import { VideoPlayer } from "./VideoPlayer";
 import { ChapterList, Chapter } from "./ChapterList";
@@ -12,6 +12,7 @@ interface LessonPlayerProps {
   breadcrumb: string[];
   currentTime: string;
   totalTime: string;
+  videoUrl?: string;  // YouTube embed URL
   moduleNumber: number;
   totalModules: number;
   remainingTime: string;
@@ -23,6 +24,7 @@ interface LessonPlayerProps {
   resourceTitle: string;
   resourceDescription: string;
   onNextLesson?: () => void;
+  onChapterSelect?: (chapterIndex: number) => void;  // Callback when chapter is selected
 }
 
 export function LessonPlayer({
@@ -30,6 +32,7 @@ export function LessonPlayer({
   breadcrumb,
   currentTime,
   totalTime,
+  videoUrl,
   moduleNumber,
   totalModules,
   remainingTime,
@@ -41,15 +44,26 @@ export function LessonPlayer({
   resourceTitle,
   resourceDescription,
   onNextLesson,
+  onChapterSelect,
 }: LessonPlayerProps) {
   const [activeChapterId, setActiveChapterId] = useState<number>(
     chapters.find((c) => c.isActive)?.id || 1
   );
   const [videoProgress, setVideoProgress] = useState(0);
 
+  // Sync activeChapterId when chapters change (e.g., from parent via Next Lesson)
+  useEffect(() => {
+    const activeChapter = chapters.find((c) => c.isActive);
+    if (activeChapter && activeChapter.id !== activeChapterId) {
+      setActiveChapterId(activeChapter.id);
+    }
+  }, [chapters, activeChapterId]);
+
   const handleChapterSelect = (chapterId: number) => {
     setActiveChapterId(chapterId);
     setVideoProgress(0);
+    // Notify parent to change the lesson (chapterId is 1-indexed, so subtract 1)
+    onChapterSelect?.(chapterId - 1);
   };
 
   const chaptersWithActiveState = chapters.map((chapter) => ({
@@ -86,6 +100,7 @@ export function LessonPlayer({
           <VideoPlayer
             currentTime={currentTime}
             totalTime={totalTime}
+            videoUrl={videoUrl}
             onProgressChange={setVideoProgress}
           />
 
@@ -139,11 +154,13 @@ export function LessonPlayer({
           </button>
 
           {/* Progress indicator */}
-          <div className="text-center text-sm text-muted-foreground">
-            <span className="font-medium">
-              {currentChapter} of {totalChapters}
-            </span>{" "}
-            chapters completed
+          <div className="text-center text-sm text-muted-foreground space-y-1">
+            <div>
+              Viewing <span className="font-medium">{activeChapterId} of {totalChapters}</span>
+            </div>
+            <div>
+              <span className="font-medium">{currentChapter}</span> chapters completed
+            </div>
           </div>
         </div>
       </div>
